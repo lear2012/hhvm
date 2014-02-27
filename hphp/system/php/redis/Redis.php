@@ -1465,8 +1465,18 @@ class Redis {
       throw new RedisException("Named persistent connections not supported");
     }
 
-    if (($port <= 0) && (substr($host, 0, 1) != '/')) {
+    //
+    // if `hostname` is unix domain socket, use default port.
+    //
+    // Notes from PHP Manual
+    //   http://www.php.net/manual/en/transports.unix.php
+    //   php4 works with /tmp/my.sock
+    //   php5 needs unix:///tmp/my.sock or udg:///tmp/my.sock
+    // Supported transports can be found via stream_get_transports()
+    //
+    if ($port < 1 && substr($host, 0, 1) == '/') {
       $port = self::DEFAULT_PORT;
+      $host = 'unix://'.$host;
     }
 
     if ($persistent) {

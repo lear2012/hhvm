@@ -1474,9 +1474,13 @@ class Redis {
     //   php5 needs unix:///tmp/my.sock or udg:///tmp/my.sock
     // Supported transports can be found via stream_get_transports()
     //
-    if ($port < 1 && substr($host, 0, 1) == '/') {
-      $port = self::DEFAULT_PORT;
-      $host = 'unix://'.$host;
+    if ($port < 1) {
+      if(substr($host, 0, 1) === '/') {
+        $port = 0;
+        $host = 'unix://'.$host;
+      } else {
+        $port = self::DEFAULT_PORT;
+      }
     }
 
     if ($persistent) {
